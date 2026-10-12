@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0a080f"><title>SmileBot: Verity</title>
+<style>
+:root{--bg:#0a080f;--panel:#12101b;--panel2:#1a1724;--line:#30283a;--acid:#c6ff5e;--muted:#aaa2b5;--text:#f6f0fb;--purple:#9b78ff}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:radial-gradient(ellipse at 50% -20%,#302044 0%,var(--bg) 55%);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif}
+.app{max-width:760px;height:100dvh;margin:auto;display:flex;flex-direction:column;overflow:hidden}
+header{padding:18px 18px 13px;background:rgba(14,11,20,.94);border-bottom:1px solid var(--line);box-shadow:0 8px 32px #0004}
+.top{display:flex;align-items:center;gap:13px}
+.avatar{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 32% 25%,#fff58a 0%,#ffdf24 45%,#f4b900 100%);box-shadow:0 0 24px #ffd92845,inset -3px -4px 7px #c68a0038;flex-shrink:0;position:relative;overflow:hidden}
+.face{width:100%;height:100%;border-radius:50%;background:transparent;position:relative;transform:none}
+.face:before{content:"";position:absolute;left:14px;top:16px;width:5px;height:5px;border-radius:50%;background:#17130d;box-shadow:14px 0 0 #17130d}
+.face:after{content:"";position:absolute;left:13px;top:24px;width:23px;height:11px;border-bottom:3px solid #17130d;border-radius:0 0 18px 18px;background:transparent}
+h1{font-size:21px;letter-spacing:-.5px;margin:0;font-weight:800}h1 span{color:var(--acid)}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.online{margin-left:auto;align-self:flex-start;color:var(--acid);font-size:10px;letter-spacing:1px;border:1px solid #c6ff5e40;border-radius:20px;padding:6px 8px}
+.tagline{font-size:11px;color:#877d91;letter-spacing:1.6px;text-transform:uppercase;margin:15px 0 10px}
+.modes{display:flex;gap:8px}
+button{font:inherit;border:0;cursor:pointer}
+.mode{flex:1;padding:10px;border-radius:12px;background:#201a2a;color:#bdb3ca;border:1px solid #352a41;font-size:13px}
+.mode.active{background:#c6ff5e;color:#171b0c;font-weight:750;border-color:var(--acid)}
+#messages{flex:1;overflow-y:auto;padding:18px 15px;display:flex;flex-direction:column;gap:13px;scroll-behavior:smooth}
+.msg{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;padding:13px 15px;border-radius:17px;max-width:88%;font-size:14px;box-shadow:0 4px 16px #0002}
+.bot{background:linear-gradient(145deg,#1c1726,#17131f);border:1px solid #3a2d45;align-self:flex-start;border-top-left-radius:5px}
+.user{background:linear-gradient(135deg,#b9f44c,#d4ff83);color:#171b0c;align-self:flex-end;border-top-right-radius:5px;font-weight:500}
+.name{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--acid);font-weight:800;margin-bottom:6px}
+.user .name{color:#46571c}
+.composer{background:rgba(18,16,27,.98);border-top:1px solid var(--line);padding:10px 12px max(12px,env(safe-area-inset-bottom))}
+.status{font-size:11px;color:#a89eb2;padding:0 5px 9px;display:flex;align-items:center;gap:7px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--acid);box-shadow:0 0 8px #c6ff5e66}
+form{display:flex;gap:8px;align-items:flex-end}
+textarea{min-width:0;flex:1;resize:none;max-height:120px;border:1px solid #3b3047;border-radius:15px;padding:12px 13px;background:#201a2a;color:var(--text);font:inherit;font-size:14px;outline:none}
+textarea:focus{border-color:#8c72b4}
+#send{padding:12px 16px;border-radius:13px;background:var(--acid);color:#161b0d;font-weight:800}
+#send:disabled{opacity:.45}
+.foot{text-align:center;color:#655b70;font-size:10px;letter-spacing:.7px;padding:8px 0 0}
+</style></head>
+<body><div class="app">
+<header>
+ <div class="top"><div class="avatar" aria-hidden="true"><div class="face"></div></div><div><h1>SmileBot <span>:</span> Verity</h1><div class="sub">Your friendly little mystery.</div></div><div class="online">● ONLINE</div></div>
+ <div class="tagline">A smile is only the beginning</div>
+ <div class="modes"><button class="mode active" data-mode="chat">◉ &nbsp; Chat</button><button class="mode" data-mode="code">⌘ &nbsp; Code mode</button></div>
+</header>
+<main id="messages" aria-live="polite"><div class="msg bot"><div class="name">SmileBot · Verity</div>Oh, hello there. 😊<br><br>I'm SmileBot. You can ask me anything. I'll be right here… so, what’s on your mind?</div></main>
+<div class="composer"><div class="status" id="status"><span class="dot"></span><span>Ready when you are</span></div>
+<form id="form"><textarea id="input" rows="1" maxlength="12000" placeholder="Say something to SmileBot…" required></textarea><button id="send" type="submit">Send ↗</button></form><div class="foot">STAY A LITTLE · CHAT SAFELY</div></div>
+</div>
+<script>
+/* Set this to your reachable backend URL. Emulator -> 10.0.2.2; phone -> computer LAN IP. */
+const API_URL = "http://127.0.0.1:3000/api/chat";
+const messagesEl=document.getElementById("messages"),input=document.getElementById("input"),send=document.getElementById("send"),statusEl=document.getElementById("status");
+let mode="chat",history=[];
+document.querySelectorAll("[data-mode]").forEach(button=>button.addEventListener("click",()=>{mode=button.dataset.mode;document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("active",b===button));input.placeholder=mode==="code"?"Ask me to write or debug code…":"Say something to SmileBot…";}));
+function setStatus(s){statusEl.innerHTML='<span class="dot"></span><span></span>';statusEl.lastElementChild.textContent=s;}
+function addMessage(role,content){const bubble=document.createElement("div");bubble.className="msg "+(role==="user"?"user":"bot");const name=document.createElement("div");name.className="name";name.textContent=role==="user"?"You":"SmileBot · Verity";const text=document.createElement("div");text.textContent=content;bubble.append(name,text);messagesEl.appendChild(bubble);messagesEl.scrollTop=messagesEl.scrollHeight;}
+document.getElementById("form").addEventListener("submit",async e=>{e.preventDefault();const text=input.value.trim();if(!text||send.disabled)return;addMessage("user",text);history.push({role:"user",content:text});input.value="";send.disabled=true;setStatus("Thinking about that…");
+try{const response=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:history.slice(-20),mode})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Request failed");if(typeof data.reply!=="string")throw new Error("Unexpected server response");history.push({role:"assistant",content:data.reply});addMessage("assistant",data.reply);setStatus("Here with you");}
+catch(error){setStatus("Can't reach the AI server");addMessage("assistant","I can't reach my AI server just yet. Check that your backend is running and that API_URL points to an address your device can reach. Details: "+error.message);history.pop();}
+finally{send.disabled=false;input.focus();}});
+input.addEventListener("input",()=>{input.style.height="auto";input.style.height=Math.min(input.scrollHeight,120)+"px";});
+</script></body></html>

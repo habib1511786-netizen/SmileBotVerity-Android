@@ -1,0 +1,11 @@
+SmileBot Verity — Android project source
+
+IMPORTANT: This is Android project source, not an installable APK.
+The file you received was a ZIP archive renamed to .apk. Android cannot install it.
+
+To build an installable APK, open this folder in Android Studio, allow Gradle sync,
+install Android SDK Platform 35 if prompted, then choose Build > Build APK(s).
+The debug APK is normally created at app/build/outputs/apk/debug/app-debug.apk.
+
+Server-connected functionality may require deploying the included server/ folder
+and configuring the app's backend URL before use.
